@@ -15,8 +15,20 @@ variable "rancher_version" {
   default = "v2.0.4"
 }
 
-variable "count_agent_nodes" {
+variable "count_agent_all_nodes" {
   default = "3"
+}
+
+variable "count_agent_etcd_nodes" {
+  default = "0"
+}
+
+variable "count_agent_controlplane_nodes" {
+  default = "0"
+}
+
+variable "count_agent_worker_nodes" {
+  default = "0"
 }
 
 variable "admin_password" {
@@ -57,10 +69,40 @@ resource "digitalocean_droplet" "rancherserver" {
   ssh_keys  = "${var.ssh_keys}"
 }
 
-resource "digitalocean_droplet" "rancheragent" {
-  count     = "${var.count_agent_nodes}"
+resource "digitalocean_droplet" "rancheragent-all" {
+  count     = "${var.count_agent_all_nodes}"
   image     = "ubuntu-16-04-x64"
-  name      = "${var.prefix}-rancheragent-${count.index}"
+  name      = "${var.prefix}-rancheragent-${count.index}-all"
+  region    = "${var.region}"
+  size      = "${var.size}"
+  user_data = "${data.template_file.userdata_agent.rendered}"
+  ssh_keys  = "${var.ssh_keys}"
+}
+
+resource "digitalocean_droplet" "rancheragent-etcd" {
+  count     = "${var.count_agent_etcd_nodes}"
+  image     = "ubuntu-16-04-x64"
+  name      = "${var.prefix}-rancheragent-${count.index}-etcd"
+  region    = "${var.region}"
+  size      = "${var.size}"
+  user_data = "${data.template_file.userdata_agent.rendered}"
+  ssh_keys  = "${var.ssh_keys}"
+}
+
+resource "digitalocean_droplet" "rancheragent-controlplane" {
+  count     = "${var.count_agent_controlplane_nodes}"
+  image     = "ubuntu-16-04-x64"
+  name      = "${var.prefix}-rancheragent-${count.index}-controlplane"
+  region    = "${var.region}"
+  size      = "${var.size}"
+  user_data = "${data.template_file.userdata_agent.rendered}"
+  ssh_keys  = "${var.ssh_keys}"
+}
+
+resource "digitalocean_droplet" "rancheragent-worker" {
+  count     = "${var.count_agent_worker_nodes}"
+  image     = "ubuntu-16-04-x64"
+  name      = "${var.prefix}-rancheragent-${count.index}-worker"
   region    = "${var.region}"
   size      = "${var.size}"
   user_data = "${data.template_file.userdata_agent.rendered}"

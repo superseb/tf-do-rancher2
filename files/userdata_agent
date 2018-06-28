@@ -44,8 +44,11 @@ while true; do
   fi
 done
 
-# Specify role flags to use
-ROLEFLAGS="--etcd --controlplane --worker"
+# Get role flags from hostname
+ROLEFLAG=`hostname | awk -F'-' '{ print $NF }'`
+if [[ "$ROLEFLAG" == "all" ]]; then
+  ROLEFLAG="all-roles"
+fi
 
 # Get token
 # Test if cluster is created
@@ -65,7 +68,7 @@ while true; do
 done
 
 # Combine command and flags
-COMPLETECMD="$AGENTCMD $ROLEFLAGS"
+COMPLETECMD="$AGENTCMD --$ROLEFLAG"
 
 # Run command
 $COMPLETECMD
