@@ -6,7 +6,12 @@ This terraform setup will:
 
 - Start a droplet running `rancher/rancher` version specified in `rancher_version`
 - Create a custom cluster called `cluster_name`
-- Start `count_agent_nodes` amount of droplets and add them to the custom cluster with all roles
+- Start `count_agent_all_nodes` amount of droplets and add them to the custom cluster with all roles
+
+### Optional adding nodes per role
+- Start `count_agent_etcd_nodes` amount of droplets and add them to the custom cluster with etcd role
+- Start `count_agent_controlplane_nodes` amount of droplets and add them to the custom cluster with controlplane role
+- Start `count_agent_worker_nodes` amount of droplets and add them to the custom cluster with worker role
 
 ## How to use
 
