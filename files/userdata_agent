@@ -1,14 +1,23 @@
 #!/bin/bash -x
-export curlprefix=appropriate
+export curlimage=appropriate/curl
+export jqimage=stedolan/jq
 export rancher_server_ip='${server_address}'
 
-curl https://releases.rancher.com/install-docker/${docker_version_agent}.sh | sh
+if [ `command -v curl` ]; then
+  curl -sL https://releases.rancher.com/install-docker/${docker_version_agent}.sh | sh
+elif [ `command -v wget` ]; then
+  wget -qO- https://releases.rancher.com/install-docker/${docker_version_agent}.sh | sh
+fi
 
-apt-get update
-apt-get -y install jq
+for image in $curlimage $jqimage "rancher/rancher-agent:${rancher_version}"; do
+  until docker inspect $image > /dev/null 2>&1; do
+    docker pull $image
+    sleep 2
+  done
+done
 
 while true; do
-  docker run --rm $curlprefix/curl -sLk https://$rancher_server_ip/ping && break
+  docker run --rm $curlimage -sLk https://$rancher_server_ip/ping && break
   sleep 5
 done
 
@@ -17,9 +26,9 @@ while true; do
 
     LOGINRESPONSE=$(docker run \
         --rm \
-        $curlprefix/curl \
+        $curlimage \
         -s "https://$rancher_server_ip/v3-public/localProviders/local?action=login" -H 'content-type: application/json' --data-binary '{"username":"admin","password":"${admin_password}"}' --insecure)
-    LOGINTOKEN=$(echo $LOGINRESPONSE | jq -r .token)
+    LOGINTOKEN=$(echo $LOGINRESPONSE | docker run --rm -i $jqimage -r .token)
 
     if [ "$LOGINTOKEN" != "null" ]; then
         break
@@ -32,10 +41,10 @@ done
 while true; do
   CLUSTERID=$(docker run \
     --rm \
-    $curlprefix/curl \
+    $curlimage \
       -sLk \
       -H "Authorization: Bearer $LOGINTOKEN" \
-      "https://$rancher_server_ip/v3/clusters?name=${cluster_name}" | jq -r '.data[].id')
+      "https://$rancher_server_ip/v3/clusters?name=${cluster_name}" | docker run --rm -i $jqimage -r '.data[].id')
 
   if [ -n "$CLUSTERID" ]; then
     break
@@ -55,10 +64,10 @@ fi
 while true; do
   AGENTCMD=$(docker run \
     --rm \
-    $curlprefix/curl \
+    $curlimage \
       -sLk \
       -H "Authorization: Bearer $LOGINTOKEN" \
-      "https://$rancher_server_ip/v3/clusterregistrationtoken?id=$CLUSTERID" | jq -r '.data[].nodeCommand' | head -1)
+      "https://$rancher_server_ip/v3/clusterregistrationtoken?id=$CLUSTERID" | docker run --rm -i $jqimage -r '.data[].nodeCommand' | head -1)
 
   if [ -n "$AGENTCMD" ]; then
     break
