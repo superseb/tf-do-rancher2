@@ -22,6 +22,10 @@ docker_version_server = "17.03"
 docker_version_agent = "17.03"
 # Droplet size
 size = "s-2vcpu-4gb"
+# Image of host running `rancher/rancher`
+image_server = "ubuntu-16-04-x64"
+# Image of host being added to a cluster (running `rancher/rancher-agent`)
+image_agent = "ubuntu-16-04-x64"
 # DigitalOcean ssh-keyid: retrieve using `curl -s -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" "https://api.digitalocean.com/v2/account/keys?per_page=200"  | jq -r '.ssh_keys[] | select(.name=="YOUR_KEY_NAME") | .id'`
 # ssh_keys = [ "your_key_id" ]
 # If this is not specified, you will get an email with the root password
