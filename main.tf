@@ -12,7 +12,7 @@ variable "prefix" {
 }
 
 variable "rancher_version" {
-  default = "v2.0.4"
+  default = "v2.0.6"
 }
 
 variable "count_agent_all_nodes" {
@@ -40,7 +40,7 @@ variable "cluster_name" {
 }
 
 variable "region" {
-  default = "ams3"
+  default = "lon1"
 }
 
 variable "size" {
