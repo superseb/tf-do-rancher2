@@ -39,7 +39,11 @@ variable "cluster_name" {
   default = "custom"
 }
 
-variable "region" {
+variable "region_server" {
+  default = "lon1"
+}
+
+variable "region_agent" {
   default = "lon1"
 }
 
@@ -71,7 +75,7 @@ resource "digitalocean_droplet" "rancherserver" {
   count     = "1"
   image     = "${var.image_server}"
   name      = "${var.prefix}-rancherserver"
-  region    = "${var.region}"
+  region    = "${var.region_server}"
   size      = "${var.size}"
   user_data = "${data.template_file.userdata_server.rendered}"
   ssh_keys  = "${var.ssh_keys}"
@@ -81,7 +85,7 @@ resource "digitalocean_droplet" "rancheragent-all" {
   count     = "${var.count_agent_all_nodes}"
   image     = "${var.image_agent}"
   name      = "${var.prefix}-rancheragent-${count.index}-all"
-  region    = "${var.region}"
+  region    = "${var.region_agent}"
   size      = "${var.size}"
   user_data = "${data.template_file.userdata_agent.rendered}"
   ssh_keys  = "${var.ssh_keys}"
@@ -91,7 +95,7 @@ resource "digitalocean_droplet" "rancheragent-etcd" {
   count     = "${var.count_agent_etcd_nodes}"
   image     = "${var.image_agent}"
   name      = "${var.prefix}-rancheragent-${count.index}-etcd"
-  region    = "${var.region}"
+  region    = "${var.region_agent}"
   size      = "${var.size}"
   user_data = "${data.template_file.userdata_agent.rendered}"
   ssh_keys  = "${var.ssh_keys}"
@@ -101,7 +105,7 @@ resource "digitalocean_droplet" "rancheragent-controlplane" {
   count     = "${var.count_agent_controlplane_nodes}"
   image     = "${var.image_agent}"
   name      = "${var.prefix}-rancheragent-${count.index}-controlplane"
-  region    = "${var.region}"
+  region    = "${var.region_agent}"
   size      = "${var.size}"
   user_data = "${data.template_file.userdata_agent.rendered}"
   ssh_keys  = "${var.ssh_keys}"
@@ -111,7 +115,7 @@ resource "digitalocean_droplet" "rancheragent-worker" {
   count     = "${var.count_agent_worker_nodes}"
   image     = "${var.image_agent}"
   name      = "${var.prefix}-rancheragent-${count.index}-worker"
-  region    = "${var.region}"
+  region    = "${var.region_agent}"
   size      = "${var.size}"
   user_data = "${data.template_file.userdata_agent.rendered}"
   ssh_keys  = "${var.ssh_keys}"
