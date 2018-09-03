@@ -28,7 +28,9 @@ size = "s-2vcpu-4gb"
 image_server = "ubuntu-16-04-x64"
 # Image of host being added to a cluster (running `rancher/rancher-agent`)
 image_agent = "ubuntu-16-04-x64"
-# DigitalOcean ssh-keyid: retrieve using `curl -s -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" "https://api.digitalocean.com/v2/account/keys?per_page=200"  | jq -r '.ssh_keys[] | select(.name=="YOUR_KEY_NAME") | .id'`
+# DigitalOcean ssh-keyid
 # ssh_keys = [ "your_key_id" ]
+# Retrieve using (max 200 keys in account): `curl -s -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" "https://api.digitalocean.com/v2/account/keys?per_page=200"  | jq -r '.ssh_keys[] | select(.name=="YOUR_KEY_NAME") | .id'`
+# If you have more than 200 keys in your account, use: `doctl -t $DIGITALOCEAN_TOKEN compute ssh-key list | grep YOUR_KEY_NAME | awk '{ print $1 }'`
 # If this is not specified, you will get an email with the root password
 ssh_keys = []
