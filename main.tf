@@ -59,6 +59,15 @@ variable "docker_version_agent" {
   default = "17.03"
 }
 
+variable "docker_root" {
+  default = ""
+}
+
+variable "k8s_version" {
+  default = ""
+}
+
+
 variable "image_server" {
   default = "ubuntu-16-04-x64"
 }
@@ -128,7 +137,9 @@ data "template_file" "userdata_server" {
     admin_password        = "${var.admin_password}"
     cluster_name          = "${var.cluster_name}"
     docker_version_server = "${var.docker_version_server}"
+    docker_root           = "${var.docker_root}"
     rancher_version       = "${var.rancher_version}"
+    k8s_version           = "${var.k8s_version}"
   }
 }
 
@@ -139,6 +150,7 @@ data "template_file" "userdata_agent" {
     admin_password       = "${var.admin_password}"
     cluster_name         = "${var.cluster_name}"
     docker_version_agent = "${var.docker_version_agent}"
+    docker_root          = "${var.docker_root}"
     rancher_version      = "${var.rancher_version}"
     server_address       = "${digitalocean_droplet.rancherserver.ipv4_address}"
   }

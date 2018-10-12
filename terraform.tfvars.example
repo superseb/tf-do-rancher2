@@ -22,6 +22,10 @@ count_agent_worker_nodes = "0"
 docker_version_server = "17.03"
 # Docker version of host being added to a cluster (running `rancher/rancher-agent`)
 docker_version_agent = "17.03"
+# Docker root on agent nodes
+docker_root = ""
+# K8s version of created cluster
+k8s_version = ""
 # Droplet size
 size = "s-2vcpu-4gb"
 # Image of host running `rancher/rancher`
