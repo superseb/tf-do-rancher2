@@ -9,6 +9,17 @@ elif [ `command -v wget` ]; then
   wget -qO- https://releases.rancher.com/install-docker/${docker_version_agent}.sh | sh
 fi
 
+if [ -n "${docker_root}" ]; then
+  echo '{"graph": "${docker_root}"}' > /etc/docker/daemon.json
+  if [ -x "$(command -v service)" ]; then
+    service docker restart
+  elif [ -x "$(command -v systemctl)" ]; then
+    systemctl restart docker
+  elif [ -x "$(command -v system-docker)" ]; then
+    system-docker restart docker
+  fi
+fi
+
 for image in $curlimage $jqimage "rancher/rancher-agent:${rancher_version}"; do
   until docker inspect $image > /dev/null 2>&1; do
     docker pull $image
