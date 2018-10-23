@@ -12,7 +12,11 @@ variable "prefix" {
 }
 
 variable "rancher_version" {
-  default = "v2.0.6"
+  default = "v2.1.1"
+}
+
+variable "rancher_args" {
+  default = ""
 }
 
 variable "count_agent_all_nodes" {
@@ -66,7 +70,6 @@ variable "docker_root" {
 variable "k8s_version" {
   default = ""
 }
-
 
 variable "image_server" {
   default = "ubuntu-16-04-x64"
@@ -139,6 +142,7 @@ data "template_file" "userdata_server" {
     docker_version_server = "${var.docker_version_server}"
     docker_root           = "${var.docker_root}"
     rancher_version       = "${var.rancher_version}"
+    rancher_args          = "${var.rancher_args}"
     k8s_version           = "${var.k8s_version}"
   }
 }

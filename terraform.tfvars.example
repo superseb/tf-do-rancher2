@@ -5,7 +5,10 @@ admin_password = "admin"
 # Resources will be prefixed with this to avoid clashing names
 prefix = "myname"
 # rancher/rancher image tag to use
-rancher_version = "v2.0.8"
+rancher_version = "v2.1.1"
+# Extra arguments for rancher/rancher container
+rancher_args = ""
+#rancher_args = "--debug"
 # Region where server should be created
 region_server = "lon1"
 # Region where agent(s) should be created
@@ -25,6 +28,7 @@ docker_version_agent = "17.03"
 # Docker root on agent nodes
 docker_root = ""
 # K8s version of created cluster
+#k8s_version = "v1.12.0-rancher1-1"
 k8s_version = ""
 # Droplet size
 size = "s-2vcpu-4gb"
