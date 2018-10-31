@@ -1,41 +1,65 @@
 # DigitalOcean API token
 do_token = "your_token"
+
 # Admin password to access Rancher
 admin_password = "admin"
+
 # Resources will be prefixed with this to avoid clashing names
 prefix = "myname"
+
 # rancher/rancher image tag to use
 rancher_version = "v2.1.1"
+
 # Extra arguments for rancher/rancher container
 rancher_args = ""
+
 #rancher_args = "--debug"
 # Region where server should be created
 region_server = "lon1"
+
 # Region where agent(s) should be created
 region_agent = "lon1"
+
 # Count of agent nodes with role all
 count_agent_all_nodes = "3"
+
 # Count of agent nodes with role etcd
 count_agent_etcd_nodes = "0"
+
 # Count of agent nodes with role controlplane
 count_agent_controlplane_nodes = "0"
+
 # Count of agent nodes with role worker
 count_agent_worker_nodes = "0"
+
 # Docker version of host running `rancher/rancher`
 docker_version_server = "17.03"
+
 # Docker version of host being added to a cluster (running `rancher/rancher-agent`)
 docker_version_agent = "17.03"
+
 # Docker root on agent nodes
 docker_root = ""
+
 # K8s version of created cluster
 #k8s_version = "v1.12.0-rancher1-1"
 k8s_version = ""
-# Droplet size
-size = "s-2vcpu-4gb"
+
+# Droplet sizes
+all_size = "s-2vcpu-4gb"
+
+etcd_size = "s-2vcpu-4gb"
+
+controlplane_size = "s-2vcpu-4gb"
+
+worker_size = "s-2vcpu-4gb"
+
 # Image of host running `rancher/rancher`
 image_server = "ubuntu-16-04-x64"
+
 # Image of host being added to a cluster (running `rancher/rancher-agent`)
 image_agent = "ubuntu-16-04-x64"
+
 # DigitalOcean ssh-keyid
 # ssh_keys = [ "your_key_id" ]
 # Retrieve using (max 200 keys in account): `curl -s -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" "https://api.digitalocean.com/v2/account/keys?per_page=200"  | jq -r '.ssh_keys[] | select(.name=="YOUR_KEY_NAME") | .id'`

@@ -55,6 +55,22 @@ variable "size" {
   default = "s-2vcpu-4gb"
 }
 
+variable "all_size" {
+  default = "s-2vcpu-4gb"
+}
+
+variable "etcd_size" {
+  default = "s-2vcpu-4gb"
+}
+
+variable "controlplane_size" {
+  default = "s-2vcpu-4gb"
+}
+
+variable "worker_size" {
+  default = "s-2vcpu-4gb"
+}
+
 variable "docker_version_server" {
   default = "17.03"
 }
@@ -98,7 +114,7 @@ resource "digitalocean_droplet" "rancheragent-all" {
   image     = "${var.image_agent}"
   name      = "${var.prefix}-rancheragent-${count.index}-all"
   region    = "${var.region_agent}"
-  size      = "${var.size}"
+  size      = "${var.all_size}"
   user_data = "${data.template_file.userdata_agent.rendered}"
   ssh_keys  = "${var.ssh_keys}"
 }
@@ -108,7 +124,7 @@ resource "digitalocean_droplet" "rancheragent-etcd" {
   image     = "${var.image_agent}"
   name      = "${var.prefix}-rancheragent-${count.index}-etcd"
   region    = "${var.region_agent}"
-  size      = "${var.size}"
+  size      = "${var.etcd_size}"
   user_data = "${data.template_file.userdata_agent.rendered}"
   ssh_keys  = "${var.ssh_keys}"
 }
@@ -118,7 +134,7 @@ resource "digitalocean_droplet" "rancheragent-controlplane" {
   image     = "${var.image_agent}"
   name      = "${var.prefix}-rancheragent-${count.index}-controlplane"
   region    = "${var.region_agent}"
-  size      = "${var.size}"
+  size      = "${var.controlplane_size}"
   user_data = "${data.template_file.userdata_agent.rendered}"
   ssh_keys  = "${var.ssh_keys}"
 }
@@ -128,7 +144,7 @@ resource "digitalocean_droplet" "rancheragent-worker" {
   image     = "${var.image_agent}"
   name      = "${var.prefix}-rancheragent-${count.index}-worker"
   region    = "${var.region_agent}"
-  size      = "${var.size}"
+  size      = "${var.worker_size}"
   user_data = "${data.template_file.userdata_agent.rendered}"
   ssh_keys  = "${var.ssh_keys}"
 }
