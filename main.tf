@@ -12,7 +12,7 @@ variable "prefix" {
 }
 
 variable "rancher_version" {
-  default = "v2.1.1"
+  default = "v2.1.3"
 }
 
 variable "rancher_args" {
