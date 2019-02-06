@@ -60,3 +60,19 @@ CLUSTERID=`echo $CLUSTERRESPONSE | docker run --rm -i $jqimage -r .id`
 
 # Generate registrationtoken
 docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/clusterregistrationtoken' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --data-binary '{"type":"clusterRegistrationToken","clusterId":"'$CLUSTERID'"}' --insecure
+
+# CLI (optional)
+API_CLI_URL_LINUX=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/settings/cli-url-linux' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --insecure)
+CLI_URL_LINUX=`echo $API_CLI_URL_LINUX | docker run --rm -i $jqimage -r .value`
+
+# Extract binary to /usr/local/bin
+docker run -v /usr/local/bin:/usr/local/bin $curlimage sh -c "curl -sLk $CLI_URL_LINUX | tar xz --strip-components=2 -C /usr/local/bin"
+
+# Get cacerts to validate connection
+API_CACERTS=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/settings/cacerts' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --insecure)
+CACERTS=$(echo $API_CACERTS | docker run --rm -i $jqimage -r .value)
+echo "$CACERTS" > /root/cacerts
+
+# Accept anything for project
+echo 1 | rancher login --cacert /root/cacerts --token $APITOKEN https://127.0.0.1/v3
+ln -s /.rancher ~/.rancher
