@@ -8,7 +8,7 @@ admin_password = "admin"
 prefix = "myname"
 
 # rancher/rancher image tag to use
-rancher_version = "v2.1.6"
+rancher_version = "v2.1.8"
 
 # Extra arguments for rancher/rancher container
 rancher_args = ""
@@ -32,6 +32,9 @@ count_agent_controlplane_nodes = "0"
 # Count of agent nodes with role worker
 count_agent_worker_nodes = "0"
 
+# Count of tools nodes
+count_tools_nodes = "0"
+
 # Docker version of host running `rancher/rancher`
 docker_version_server = "17.03"
 
@@ -54,11 +57,16 @@ controlplane_size = "s-2vcpu-4gb"
 
 worker_size = "s-2vcpu-4gb"
 
+tools_size = "s-4vcpu-8gb"
+
 # Image of host running `rancher/rancher`
 image_server = "ubuntu-16-04-x64"
 
 # Image of host being added to a cluster (running `rancher/rancher-agent`)
 image_agent = "ubuntu-16-04-x64"
+
+# Image for host running tools
+image_tools = "ubuntu-16-04-x64"
 
 # DigitalOcean ssh-keyid
 # ssh_keys = [ "your_key_id" ]

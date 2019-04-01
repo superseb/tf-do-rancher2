@@ -1,0 +1,57 @@
+#!/bin/bash -x
+if [ `command -v curl` ]; then
+  curl -sL https://releases.rancher.com/install-docker/${docker_version_agent}.sh | sh
+  IP="$(curl -s http://169.254.169.254/metadata/v1/interfaces/private/0/ipv4/address)"
+elif [ `command -v wget` ]; then
+  wget -qO- https://releases.rancher.com/install-docker/${docker_version_agent}.sh | sh
+  IP="$(wget -qO- http://169.254.169.254/metadata/v1/interfaces/private/0/ipv4/address)"
+fi
+
+docker run --name squid -d --restart=always --publish $IP:3128:3128 --volume /srv/docker/squid/cache:/var/spool/squid3 sameersbn/squid:3.3.8-23   
+
+# Elasticsearch
+sysctl -w vm.max_map_count=262144
+docker run --name elasticsearch -d -p $IP:9200:9200 -p $IP:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:6.6.2
+
+# Kibana
+docker run -d --name kibana -p 5601:5601 --link=elasticsearch -e "SERVER_NAME=localhost" -e "ELASTIC_SEARCH_URL=http://elasticsearch:9200/" docker.elastic.co/kibana/kibana:6.6.2
+
+# SMTP
+
+# Install s-nail
+apt -y install s-nail
+
+# Mailhog
+# docker logs mailhog
+docker run -d  --name mailhog -p $IP:1025:1025 mailhog/mailhog
+
+# Echo server
+# docker logs echo
+docker run -d --name echo -p $IP:8080:8080 -e LOG_HTTP_BODY=1 jmalloc/echo-server
+
+# Syslog-ng to stdout
+# docker logs syslog
+cat <<EOF > /root/syslog-ng.conf
+@version: 3.19
+
+source s_net { udp(); };
+destination d_stdout { file("/dev/stdout"); };
+
+log { source(s_net); destination(d_stdout); };
+EOF
+docker run -d --name syslog -p $IP:514:514 -p $IP:514:514/udp -v /root/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf balabit/syslog-ng:latest --no-caps
+
+# Fluentd
+# docker logs fluentd
+mkdir /root/fluentd
+cat <<EOF > /root/fluentd/fluentd.conf
+<source>
+  @type forward
+  port 24224
+</source>
+
+<match *.**>
+  @type stdout
+</match>
+EOF
+docker run -d --name fluentd -p $IP:24224:24224 -p $IP:24224:24224/udp -v /root/fluentd:/fluentd/etc fluent/fluentd:v1.3-debian-1 -c /fluentd/etc/fluentd.conf -v 
