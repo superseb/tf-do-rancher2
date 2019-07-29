@@ -12,7 +12,7 @@ variable "prefix" {
 }
 
 variable "rancher_version" {
-  default = "v2.1.6"
+  default = "v2.2.6"
 }
 
 variable "rancher_args" {
@@ -80,11 +80,11 @@ variable "tools_size" {
 }
 
 variable "docker_version_server" {
-  default = "17.03"
+  default = "18.09"
 }
 
 variable "docker_version_agent" {
-  default = "17.03"
+  default = "18.09"
 }
 
 variable "docker_root" {
@@ -96,15 +96,15 @@ variable "k8s_version" {
 }
 
 variable "image_server" {
-  default = "ubuntu-16-04-x64"
+  default = "ubuntu-18-04-x64"
 }
 
 variable "image_agent" {
-  default = "ubuntu-16-04-x64"
+  default = "ubuntu-18-04-x64"
 }
 
 variable "image_tools" {
-  default = "ubuntu-16-04-x64"
+  default = "ubuntu-18-04-x64"
 }
 
 variable "ssh_keys" {
