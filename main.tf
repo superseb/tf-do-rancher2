@@ -212,6 +212,19 @@ data "template_file" "userdata_tools" {
   }
 }
 
+resource "local_file" "ssh_config" {
+  content  = templatefile("${path.module}/files/ssh_config_template", {
+    prefix                    = var.prefix
+    rancherserver             = digitalocean_droplet.rancherserver[0].ipv4_address,
+    rancheragent-all          = [for node in digitalocean_droplet.rancheragent-all: node.ipv4_address],
+    rancheragent-etcd         = [for node in digitalocean_droplet.rancheragent-etcd: node.ipv4_address],
+    rancheragent-controlplane = [for node in digitalocean_droplet.rancheragent-controlplane: node.ipv4_address],
+    rancheragent-worker       = [for node in digitalocean_droplet.rancheragent-worker: node.ipv4_address],
+    rancher-tools             = [for node in digitalocean_droplet.rancher-tools: node.ipv4_address]
+  })
+  filename = "${path.module}/ssh_config"
+}
+
 output "rancher-url" {
   value = ["https://${digitalocean_droplet.rancherserver[0].ipv4_address}"]
 }
