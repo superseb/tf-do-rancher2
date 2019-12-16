@@ -107,6 +107,18 @@ variable "image_tools" {
   default = "ubuntu-18-04-x64"
 }
 
+variable "user_server" {
+  default = "root"
+}
+
+variable "user_agent" {
+  default = "root"
+}
+
+variable "user_tools" {
+  default = "root"
+}
+
 variable "ssh_keys" {
   default = []
 }
@@ -220,7 +232,10 @@ resource "local_file" "ssh_config" {
     rancheragent-etcd         = [for node in digitalocean_droplet.rancheragent-etcd: node.ipv4_address],
     rancheragent-controlplane = [for node in digitalocean_droplet.rancheragent-controlplane: node.ipv4_address],
     rancheragent-worker       = [for node in digitalocean_droplet.rancheragent-worker: node.ipv4_address],
-    rancher-tools             = [for node in digitalocean_droplet.rancher-tools: node.ipv4_address]
+    rancher-tools             = [for node in digitalocean_droplet.rancher-tools: node.ipv4_address],
+    user-server               = var.user_server,
+    user-agent                = var.user_agent,
+    user-tools                = var.user_tools
   })
   filename = "${path.module}/ssh_config"
 }

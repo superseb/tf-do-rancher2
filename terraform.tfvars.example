@@ -68,6 +68,15 @@ image_agent = "ubuntu-18-04-x64"
 # Image for host running tools
 image_tools = "ubuntu-18-04-x64"
 
+## User for server image
+user_server = "root"
+
+## User for agent image
+user_agent = "root"
+
+## User for tools image
+user_tools = "root"
+
 # DigitalOcean ssh-keyid
 # ssh_keys = [ "your_key_id" ]
 # Retrieve using (max 200 keys in account): `curl -s -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" "https://api.digitalocean.com/v2/account/keys?per_page=200"  | jq -r '.ssh_keys[] | select(.name=="YOUR_KEY_NAME") | .id'`

@@ -37,7 +37,7 @@ Note: replace PRIVATE_IP or PUBLIC_IP with tools-private-ip or tools-public-ip
 
 ## SSH Config
 
-**Note: this is currently limited to images that can be accessed using the username `root`**
+**Note: set the appropriate users for the images in the terraform variables, default is `root`**
 
 You can use the use the auto-generated ssh_config file to connect to the droplets by droplet name, e.g. `ssh <prefix>-rancheragent-0-all` or `ssh <prefix>-rancherserver` etc. To do so, you have two options:
 
