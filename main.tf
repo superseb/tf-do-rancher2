@@ -137,7 +137,7 @@ resource "digitalocean_droplet" "rancherserver" {
 resource "digitalocean_droplet" "rancheragent-all" {
   count              = var.count_agent_all_nodes
   image              = var.image_agent
-  name               = "${var.prefix}-rancheragent-${count.index}-all"
+  name               = "${var.prefix}-rancheragent-all-${count.index}"
   private_networking = true
   region             = var.region_agent
   size               = var.all_size
@@ -148,7 +148,7 @@ resource "digitalocean_droplet" "rancheragent-all" {
 resource "digitalocean_droplet" "rancheragent-etcd" {
   count              = var.count_agent_etcd_nodes
   image              = var.image_agent
-  name               = "${var.prefix}-rancheragent-${count.index}-etcd"
+  name               = "${var.prefix}-rancheragent-etcd-${count.index}"
   private_networking = true
   region             = var.region_agent
   size               = var.etcd_size
@@ -159,7 +159,7 @@ resource "digitalocean_droplet" "rancheragent-etcd" {
 resource "digitalocean_droplet" "rancheragent-controlplane" {
   count              = var.count_agent_controlplane_nodes
   image              = var.image_agent
-  name               = "${var.prefix}-rancheragent-${count.index}-controlplane"
+  name               = "${var.prefix}-rancheragent-controlplane-${count.index}"
   private_networking = true
   region             = var.region_agent
   size               = var.controlplane_size
@@ -170,7 +170,7 @@ resource "digitalocean_droplet" "rancheragent-controlplane" {
 resource "digitalocean_droplet" "rancheragent-worker" {
   count              = var.count_agent_worker_nodes
   image              = var.image_agent
-  name               = "${var.prefix}-rancheragent-${count.index}-worker"
+  name               = "${var.prefix}-rancheragent-worker-${count.index}"
   private_networking = true
   region             = var.region_agent
   size               = var.worker_size
@@ -181,7 +181,7 @@ resource "digitalocean_droplet" "rancheragent-worker" {
 resource "digitalocean_droplet" "rancher-tools" {
   count              = var.count_tools_nodes
   image              = var.image_tools
-  name               = "${var.prefix}-rancher-${count.index}-tools"
+  name               = "${var.prefix}-rancher-tools-${count.index}"
   private_networking = true
   region             = var.region_agent
   size               = var.tools_size
