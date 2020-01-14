@@ -65,7 +65,7 @@ while true; do
 done
 
 # Get role flags from hostname
-ROLEFLAG=`hostname | awk -F'-' '{ print $NF }'`
+ROLEFLAG=`hostname | awk -F'-' '{ print $(NF-1) }'`
 if [[ "$ROLEFLAG" == "all" ]]; then
   ROLEFLAG="all-roles"
 fi

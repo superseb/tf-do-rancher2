@@ -39,7 +39,7 @@ Note: replace PRIVATE_IP or PUBLIC_IP with tools-private-ip or tools-public-ip
 
 **Note: set the appropriate users for the images in the terraform variables, default is `root`**
 
-You can use the use the auto-generated ssh_config file to connect to the droplets by droplet name, e.g. `ssh <prefix>-rancheragent-0-all` or `ssh <prefix>-rancherserver` etc. To do so, you have two options:
+You can use the use the auto-generated ssh_config file to connect to the droplets by droplet name, e.g. `ssh <prefix>-rancheragent-all-0` or `ssh <prefix>-rancherserver` etc. To do so, you have two options:
 
 1. Add an `Include` directive at the top of the SSH config file in your home directory (`~/.ssh/config`) to include the ssh_config file at the location you have checked out the this repository, e.g. `Include ~/git/tf-do-rancher2/ssh_config`.
 

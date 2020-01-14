@@ -4,35 +4,35 @@ Host ${prefix}-rancherserver
   StrictHostKeyChecking no
 
 %{ for index, ip in rancheragent-all ~}
-Host ${prefix}-rancheragent-${index}-all
+Host ${prefix}-rancheragent-all-${index}
   HostName ${ip}
   User ${user-agent}
   StrictHostKeyChecking no
 
 %{ endfor ~}
 %{ for index, ip in rancheragent-etcd ~}
-Host ${prefix}-rancheragent-${index}-etcd
+Host ${prefix}-rancheragent-etcd-${index}
   HostName ${ip}
   User ${user-agent}
   StrictHostKeyChecking no
 
 %{ endfor ~}
 %{ for index, ip in rancheragent-controlplane ~}
-Host ${prefix}-rancheragent-${index}-controlplane
+Host ${prefix}-rancheragent-controlplane-${index}
   HostName ${ip}
   User ${user-agent}
   StrictHostKeyChecking no
 
 %{ endfor ~}
 %{ for index, ip in rancheragent-worker ~}
-Host ${prefix}-rancheragent-${index}-worker
+Host ${prefix}-rancheragent-worker-${index}
   HostName ${ip}
   User ${user-agent}
   StrictHostKeyChecking no
 
 %{ endfor ~}
 %{ for index, ip in rancher-tools ~}
-Host ${prefix}-rancher-${index}-tools
+Host ${prefix}-rancher-tools-${index}
   HostName ${ip}
   User ${user-tools}
   StrictHostKeyChecking no
