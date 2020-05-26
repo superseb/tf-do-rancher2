@@ -123,6 +123,9 @@ variable "ssh_keys" {
   default = []
 }
 
+data "digitalocean_account" "do-account" {
+}
+
 resource "digitalocean_droplet" "rancherserver" {
   count              = "1"
   image              = var.image_server
@@ -132,6 +135,7 @@ resource "digitalocean_droplet" "rancherserver" {
   size               = var.size
   user_data          = data.template_file.userdata_server.rendered
   ssh_keys           = var.ssh_keys
+  tags               = [join("",["user:",replace(split("@",data.digitalocean_account.do-account.email)[0],".","-")])]
 }
 
 resource "digitalocean_droplet" "rancheragent-all" {
@@ -143,6 +147,7 @@ resource "digitalocean_droplet" "rancheragent-all" {
   size               = var.all_size
   user_data          = data.template_file.userdata_agent.rendered
   ssh_keys           = var.ssh_keys
+  tags               = [join("",["user:",replace(split("@",data.digitalocean_account.do-account.email)[0],".","-")])]
 }
 
 resource "digitalocean_droplet" "rancheragent-etcd" {
@@ -154,6 +159,7 @@ resource "digitalocean_droplet" "rancheragent-etcd" {
   size               = var.etcd_size
   user_data          = data.template_file.userdata_agent.rendered
   ssh_keys           = var.ssh_keys
+  tags               = [join("",["user:",replace(split("@",data.digitalocean_account.do-account.email)[0],".","-")])]
 }
 
 resource "digitalocean_droplet" "rancheragent-controlplane" {
@@ -165,6 +171,7 @@ resource "digitalocean_droplet" "rancheragent-controlplane" {
   size               = var.controlplane_size
   user_data          = data.template_file.userdata_agent.rendered
   ssh_keys           = var.ssh_keys
+  tags               = [join("",["user:",replace(split("@",data.digitalocean_account.do-account.email)[0],".","-")])]
 }
 
 resource "digitalocean_droplet" "rancheragent-worker" {
@@ -176,6 +183,7 @@ resource "digitalocean_droplet" "rancheragent-worker" {
   size               = var.worker_size
   user_data          = data.template_file.userdata_agent.rendered
   ssh_keys           = var.ssh_keys
+  tags               = [join("",["user:",replace(split("@",data.digitalocean_account.do-account.email)[0],".","-")])]
 }
 
 resource "digitalocean_droplet" "rancher-tools" {
@@ -187,6 +195,7 @@ resource "digitalocean_droplet" "rancher-tools" {
   size               = var.tools_size
   user_data          = data.template_file.userdata_tools.rendered
   ssh_keys           = var.ssh_keys
+  tags               = [join("",["user:",replace(split("@",data.digitalocean_account.do-account.email)[0],".","-")])]
 }
 
 data "template_file" "userdata_server" {
