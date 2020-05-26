@@ -15,6 +15,10 @@ variable "rancher_version" {
   default = "v2.2.6"
 }
 
+variable "audit_level" {
+  default = 0
+}
+
 variable "rancher_args" {
   default = ""
 }
@@ -200,6 +204,7 @@ data "template_file" "userdata_server" {
     rancher_version       = var.rancher_version
     rancher_args          = var.rancher_args
     k8s_version           = var.k8s_version
+    audit_level           = var.audit_level
   }
 }
 
