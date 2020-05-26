@@ -15,7 +15,7 @@ for image in $curlimage $jqimage "rancher/rancher:${rancher_version}"; do
   done
 done
 
-docker run -d --restart=unless-stopped -p 80:80 -p 443:443 -v /root/rancher:/var/lib/rancher rancher/rancher:${rancher_version} ${rancher_args}
+docker run -d -e AUDIT_LEVEL=${audit_level} --restart=unless-stopped -p 80:80 -p 443:443 -v /root/rancher:/var/lib/rancher rancher/rancher:${rancher_version} ${rancher_args}
 
 while true; do
   docker run --rm --net=host $curlimage -sLk https://127.0.0.1/ping && break
