@@ -53,6 +53,23 @@ APITOKEN=`echo $APIRESPONSE | docker run --rm -i $jqimage -r .token`
 RANCHER_SERVER="https://$(docker run --rm --net=host $curlimage -s http://169.254.169.254/metadata/v1/interfaces/public/0/ipv4/address)"
 docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/settings/server-url' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" -X PUT --data-binary '{"name":"server-url","value":"'$RANCHER_SERVER'"}' --insecure
 
+# Check for available k8s versions if not specifically set
+if [ -z "${k8s_version}" ]; then
+    while true; do
+        K8SVERSIONRESPONSE=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/settings/k8s-version' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --insecure)
+        K8SVERSION=$(echo $K8SVERSIONRESPONSE | docker run --rm -i $jqimage -r .value)
+        echo "K8SVERSION: "$K8SVERSION""
+
+        if [ "$K8SVERSION" != "" ]; then
+            break
+        else
+            sleep 5
+        fi
+    done
+else
+    K8SVERSION="${k8s_version}"
+fi
+
 # Create cluster
 CLUSTERRESPONSE=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/cluster' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --data-binary '{"dockerRootDir":"${docker_root}","enableNetworkPolicy":false,"type":"cluster","rancherKubernetesEngineConfig":{"kubernetesVersion":"${k8s_version}","addonJobTimeout":30,"ignoreDockerVersion":true,"sshAgentAuth":false,"type":"rancherKubernetesEngineConfig","authentication":{"type":"authnConfig","strategy":"x509"},"network":{"type":"networkConfig","plugin":"canal"},"ingress":{"type":"ingressConfig","provider":"nginx"},"monitoring":{"type":"monitoringConfig","provider":"metrics-server"},"services":{"type":"rkeConfigServices","kubeApi":{"podSecurityPolicy":false,"type":"kubeAPIService"},"etcd":{"creation":"12h","extraArgs":{"heartbeat-interval":500,"election-timeout":5000},"retention":"72h","snapshot":false,"type":"etcdService","backupConfig":{"enabled":true,"intervalHours":12,"retention":6,"type":"backupConfig"}}}},"localClusterAuthEndpoint":{"enabled":true,"type":"localClusterAuthEndpoint"},"name":"${cluster_name}"}' --insecure)
 # Extract clusterid to use for generating the docker run command
