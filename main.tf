@@ -84,11 +84,11 @@ variable "tools_size" {
 }
 
 variable "docker_version_server" {
-  default = "18.09"
+  default = "19.03"
 }
 
 variable "docker_version_agent" {
-  default = "18.09"
+  default = "19.03"
 }
 
 variable "docker_root" {
@@ -100,15 +100,15 @@ variable "k8s_version" {
 }
 
 variable "image_server" {
-  default = "ubuntu-18-04-x64"
+  default = "ubuntu-20-04-x64"
 }
 
 variable "image_agent" {
-  default = "ubuntu-18-04-x64"
+  default = "ubuntu-20-04-x64"
 }
 
 variable "image_tools" {
-  default = "ubuntu-18-04-x64"
+  default = "ubuntu-20-04-x64"
 }
 
 variable "user_server" {
