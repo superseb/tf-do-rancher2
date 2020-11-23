@@ -39,10 +39,10 @@ count_agent_worker_nodes = "0"
 count_tools_nodes = "0"
 
 # Docker version of host running `rancher/rancher`
-docker_version_server = "18.09"
+docker_version_server = "19.03"
 
 # Docker version of host being added to a cluster (running `rancher/rancher-agent`)
-docker_version_agent = "18.09"
+docker_version_agent = "19.03"
 
 # Docker root on agent nodes
 docker_root = ""
@@ -63,13 +63,13 @@ worker_size = "s-2vcpu-4gb"
 tools_size = "s-4vcpu-8gb"
 
 # Image of host running `rancher/rancher`
-image_server = "ubuntu-18-04-x64"
+image_server = "ubuntu-20-04-x64"
 
 # Image of host being added to a cluster (running `rancher/rancher-agent`)
-image_agent = "ubuntu-18-04-x64"
+image_agent = "ubuntu-20-04-x64"
 
 # Image for host running tools
-image_tools = "ubuntu-18-04-x64"
+image_tools = "ubuntu-20-04-x64"
 
 ## User for server image
 user_server = "root"
