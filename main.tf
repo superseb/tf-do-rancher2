@@ -12,7 +12,7 @@ variable "prefix" {
 }
 
 variable "rancher_version" {
-  default = "v2.2.6"
+  default = "v2.5.2"
 }
 
 variable "audit_level" {
