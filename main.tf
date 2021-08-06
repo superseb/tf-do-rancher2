@@ -12,7 +12,7 @@ variable "prefix" {
 }
 
 variable "rancher_version" {
-  default = "v2.5.9"
+  default = "v2.6.2"
 }
 
 variable "audit_level" {
@@ -43,12 +43,32 @@ variable "count_tools_nodes" {
   default = "0"
 }
 
+variable "count_rke2_agent_all_nodes" {
+  default = "0"
+}
+
+variable "count_rke2_agent_etcd_nodes" {
+  default = "0"
+}
+
+variable "count_rke2_agent_controlplane_nodes" {
+  default = "0"
+}
+
+variable "count_rke2_agent_worker_nodes" {
+  default = "0"
+}
+
 variable "admin_password" {
   default = "admin"
 }
 
 variable "cluster_name" {
   default = "custom"
+}
+
+variable "cluster_rke2_name" {
+  default = "rke2custom"
 }
 
 variable "region_server" {
@@ -96,6 +116,10 @@ variable "docker_root" {
 }
 
 variable "k8s_version" {
+  default = ""
+}
+
+variable "k8s_rke2_version" {
   default = ""
 }
 
@@ -202,17 +226,68 @@ resource "digitalocean_droplet" "rancher-tools" {
   tags               = [join("",["user:",replace(split("@",data.digitalocean_account.do-account.email)[0],".","-")])]
 }
 
+resource "digitalocean_droplet" "rancheragent-rke2-all" {
+  count              = var.count_rke2_agent_all_nodes
+  image              = var.image_agent
+  name               = "${var.prefix}-rancheragent-rke2-all-${count.index}"
+  private_networking = true
+  region             = var.region_agent
+  size               = var.all_size
+  user_data          = data.template_file.userdata_rke2_agent.rendered
+  ssh_keys           = var.ssh_keys
+  tags               = [join("",["user:",replace(split("@",data.digitalocean_account.do-account.email)[0],".","-")])]
+}
+
+resource "digitalocean_droplet" "rancheragent-rke2-etcd" {
+  count              = var.count_rke2_agent_etcd_nodes
+  image              = var.image_agent
+  name               = "${var.prefix}-rancheragent-rke2-etcd-${count.index}"
+  private_networking = true
+  region             = var.region_agent
+  size               = var.etcd_size
+  user_data          = data.template_file.userdata_rke2_agent.rendered
+  ssh_keys           = var.ssh_keys
+  tags               = [join("",["user:",replace(split("@",data.digitalocean_account.do-account.email)[0],".","-")])]
+}
+
+resource "digitalocean_droplet" "rancheragent-rke2-controlplane" {
+  count              = var.count_rke2_agent_controlplane_nodes
+  image              = var.image_agent
+  name               = "${var.prefix}-rancheragent-rke2-controlplane-${count.index}"
+  private_networking = true
+  region             = var.region_agent
+  size               = var.controlplane_size
+  user_data          = data.template_file.userdata_rke2_agent.rendered
+  ssh_keys           = var.ssh_keys
+  tags               = [join("",["user:",replace(split("@",data.digitalocean_account.do-account.email)[0],".","-")])]
+}
+
+resource "digitalocean_droplet" "rancheragent-rke2-worker" {
+  count              = var.count_rke2_agent_worker_nodes
+  image              = var.image_agent
+  name               = "${var.prefix}-rancheragent-rke2-worker-${count.index}"
+  private_networking = true
+  region             = var.region_agent
+  size               = var.worker_size
+  user_data          = data.template_file.userdata_rke2_agent.rendered
+  ssh_keys           = var.ssh_keys
+  tags               = [join("",["user:",replace(split("@",data.digitalocean_account.do-account.email)[0],".","-")])]
+}
+
+
 data "template_file" "userdata_server" {
   template = file("files/userdata_server")
 
   vars = {
     admin_password        = var.admin_password
     cluster_name          = var.cluster_name
+    cluster_rke2_name     = var.cluster_rke2_name
     docker_version_server = var.docker_version_server
     docker_root           = var.docker_root
     rancher_version       = var.rancher_version
     rancher_args          = var.rancher_args
     k8s_version           = var.k8s_version
+    k8s_rke2_version      = var.k8s_rke2_version
     audit_level           = var.audit_level
   }
 }
@@ -235,6 +310,19 @@ data "template_file" "userdata_tools" {
 
   vars = {
     docker_version_agent = var.docker_version_agent
+  }
+}
+
+data "template_file" "userdata_rke2_agent" {
+  template = file("files/userdata_rke2_agent")
+
+  vars = {
+    admin_password       = var.admin_password
+    cluster_rke2_name    = var.cluster_rke2_name
+    docker_version_agent = var.docker_version_agent
+    docker_root          = var.docker_root
+    rancher_version      = var.rancher_version
+    server_address       = digitalocean_droplet.rancherserver[0].ipv4_address
   }
 }
 

@@ -1,0 +1,64 @@
+#!/bin/bash -x
+export rancher_server_ip='${server_address}'
+
+apt -y install curl || true
+snap install jq || true
+
+while true; do
+  curl -sLk https://$rancher_server_ip/ping && sleep 15 && break
+  sleep 5
+done
+
+# Login
+while true; do
+
+    LOGINRESPONSE=$(curl -s "https://$rancher_server_ip/v3-public/localProviders/local?action=login" -H 'content-type: application/json' --data-binary '{"username":"admin","password":"${admin_password}"}' --insecure)
+    LOGINTOKEN=$(echo $LOGINRESPONSE | jq -r .token)
+
+    if [ "$LOGINTOKEN" != "" ] && [ "$LOGINTOKEN" != "null" ]; then
+        break
+    else
+        sleep 5
+    fi
+done
+
+# Test if cluster is created
+while true; do
+  CLUSTERID=$(curl \
+      -sLk \
+      -H "Authorization: Bearer $LOGINTOKEN" \
+      "https://$rancher_server_ip/v3/clusters?name=${cluster_rke2_name}" | jq -r '.data[].id')
+
+  if [ -n "$CLUSTERID" ]; then
+    break
+  else
+    sleep 5
+  fi
+done
+
+# Get role flags from hostname
+ROLEFLAG=`hostname | awk -F'-' '{ print $(NF-1) }'`
+if [[ "$ROLEFLAG" == "all" ]]; then
+  ROLEFLAG="etcd --controlplane --worker"
+fi
+
+# Get token
+# Test if cluster is created
+while true; do
+  AGENTCMD=$(curl \
+      -sLk \
+      -H "Authorization: Bearer $LOGINTOKEN" \
+      "https://$rancher_server_ip/v3/clusterregistrationtoken?clusterId=$CLUSTERID" | jq -r '.data[].insecureNodeCommand' | head -1)
+
+  if [ -n "$AGENTCMD" ]; then
+    break
+  else
+    sleep 5
+  fi
+done
+
+# Combine command and flags
+COMPLETECMD="$AGENTCMD --$ROLEFLAG"
+
+# Run command
+sh -c "$${COMPLETECMD}"

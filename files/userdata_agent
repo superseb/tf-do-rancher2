@@ -28,7 +28,7 @@ for image in $curlimage $jqimage "rancher/rancher-agent:${rancher_version}"; do
 done
 
 while true; do
-  docker run --rm $curlimage -sLk https://$rancher_server_ip/ping && break
+  docker run --rm $curlimage -sLk https://$rancher_server_ip/ping && sleep 15 && break
   sleep 5
 done
 

@@ -19,8 +19,7 @@ done
 docker run -d -e AUDIT_LEVEL=${audit_level} --privileged --restart=unless-stopped -p 80:80 -p 443:443 -v /root/rancher:/var/lib/rancher --name rancher-server rancher/rancher:${rancher_version} ${rancher_args}
 
 while true; do
-  docker run --rm --net=host $curlimage -sLk https://127.0.0.1/ping && break
-  sleep 5
+  docker run --rm --net=host $curlimage -sLk https://127.0.0.1/ping && sleep 10 && break
 done
 
 export rancher_version="${rancher_version}"
@@ -113,12 +112,29 @@ else
     K8SVERSION="${k8s_version}"
 fi
 
-# Create cluster
+# Create RKE1 cluster
 CLUSTERRESPONSE=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/cluster' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --data-binary '{"dockerRootDir":"${docker_root}","enableNetworkPolicy":false,"type":"cluster","rancherKubernetesEngineConfig":{"kubernetesVersion":"${k8s_version}","addonJobTimeout":30,"ignoreDockerVersion":true,"sshAgentAuth":false,"type":"rancherKubernetesEngineConfig","authentication":{"type":"authnConfig","strategy":"x509"},"network":{"type":"networkConfig","plugin":"canal"},"ingress":{"type":"ingressConfig","provider":"nginx"},"monitoring":{"type":"monitoringConfig","provider":"metrics-server"},"services":{"type":"rkeConfigServices","kubeApi":{"podSecurityPolicy":false,"type":"kubeAPIService"},"etcd":{"creation":"12h","extraArgs":{"heartbeat-interval":500,"election-timeout":5000},"retention":"72h","snapshot":false,"type":"etcdService","backupConfig":{"enabled":true,"intervalHours":12,"retention":6,"type":"backupConfig"}}}},"localClusterAuthEndpoint":{"enabled":true,"type":"localClusterAuthEndpoint"},"name":"${cluster_name}"}' --insecure)
 # Extract clusterid to use for generating the docker run command
 CLUSTERID=`echo $CLUSTERRESPONSE | docker run --rm -i $jqimage -r .id`
 
 # Generate registrationtoken
+docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/clusterregistrationtoken' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --data-binary '{"type":"clusterRegistrationToken","clusterId":"'$CLUSTERID'"}' --insecure
+
+# Create RKE2/Government cluster
+RKE2_K8S_VERSION=${k8s_rke2_version}
+if [[ "x$${RKE2_K8S_VERSION}" == "x" ]]; then
+  # Look up latest available
+  ALL_RKE2_K8S=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v1-rke2-release/releases' --insecure)
+  LATEST_RKE2_K8S=`echo $ALL_RKE2_K8S | docker run --rm -i $jqimage -r '.data[] | select(.type=="release") | .id' | tail -1`
+  RKE2_K8S_VERSION=$LATEST_RKE2_K8S
+fi
+
+#CLUSTERRESPONSE=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v1/provisioning.cattle.io.clusters' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --data-binary '{"type":"provisioning.cattle.io.cluster","metadata":{"namespace":"fleet-default","name":"${cluster_rke2_name}"},"spec":{"kubernetesVersion":"'$${RKE2_K8S_VERSION}'","rkeConfig":{"upgradeStrategy":{"controlPlaneConcurrency":"10%","controlPlaneDrainOptions":{},"workerConcurrency":"10%","workerDrainOptions":{}},"controlPlaneConfig":{"audit-policy-file":null,"cluster-cidr":null,"cluster-dns":null,"cluster-domain":null,"cni":"calico","disable":null,"etcd-disable-snapshots":null,"etcd-expose-metrics":null,"etcd-snapshot-dir":null,"etcd-snapshot-name":null,"etcd-snapshot-retention":null,"etcd-snapshot-schedule-cron":null,"kube-apiserver-arg":null,"kube-controller-manager-arg":null,"kube-scheduler-arg":null,"profile":null,"secrets-encryption":null,"service-cidr":null,"service-node-port-range":null,"tls-san":null},"workerConfig":[{"audit-policy-file":null,"cloud-provider-config":null,"cloud-provider-name":"none","kubelet-arg":null,"profile":null,"protect-kernel-defaults":null,"selinux":null,"system-default-registry":null}],"localClusterAuthEndpoint":{"enabled":false,"caCerts":"","fqdn":""},"nodePools":[]},"defaultPodSecurityPolicyTemplateName":null}}' --insecure)
+CLUSTERRESPONSE=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v1/provisioning.cattle.io.clusters' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --data-binary '{"type":"provisioning.cattle.io.cluster","metadata":{"namespace":"fleet-default","name":"${cluster_rke2_name}"},"spec":{"kubernetesVersion":"'$${RKE2_K8S_VERSION}'","rkeConfig":{"upgradeStrategy":{"controlPlaneConcurrency":"10%","controlPlaneDrainOptions":{},"workerConcurrency":"10%","workerDrainOptions":{}},"localClusterAuthEndpoint":{"enabled":false,"caCerts":"","fqdn":""},"machinePools":[]},"defaultPodSecurityPolicyTemplateName":null}}' --insecure)
+# Get  clusterid to use for generating the docker run command
+CLUSTERID=`docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/clusters?name=${cluster_rke2_name}' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --insecure | docker run --rm -i $jqimage -r .data[].id`
+
+# Generate RKE2/Government registrationtoken
 docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/clusterregistrationtoken' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --data-binary '{"type":"clusterRegistrationToken","clusterId":"'$CLUSTERID'"}' --insecure
 
 # CLI (optional)
