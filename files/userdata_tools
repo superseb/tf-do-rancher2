@@ -11,10 +11,10 @@ docker run --name squid -d --restart=always --publish $IP:3128:3128 --volume /sr
 
 # Elasticsearch
 sysctl -w vm.max_map_count=262144
-docker run --name elasticsearch -d -p $IP:9200:9200 -p $IP:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:6.6.2
+docker run --name elasticsearch -d -p $IP:9200:9200 -p $IP:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.14.0
 
 # Kibana
-docker run -d --name kibana -p 5601:5601 --link=elasticsearch -e "SERVER_NAME=localhost" -e "ELASTIC_SEARCH_URL=http://elasticsearch:9200/" docker.elastic.co/kibana/kibana:6.6.2
+docker run -d --name kibana -p 5601:5601 --link=elasticsearch -e "SERVER_NAME=localhost" -e "ELASTIC_SEARCH_URL=http://elasticsearch:9200/" docker.elastic.co/kibana/kibana:7.14.0
 
 # SMTP
 
@@ -54,4 +54,4 @@ cat <<EOF > /root/fluentd/fluentd.conf
   @type stdout
 </match>
 EOF
-docker run -d --name fluentd -p $IP:24224:24224 -p $IP:24224:24224/udp -v /root/fluentd:/fluentd/etc fluent/fluentd:v1.3-debian-1 -c /fluentd/etc/fluentd.conf -v 
+docker run -d --name fluentd -p $IP:24224:24224 -p $IP:24224:24224/udp -v /root/fluentd:/fluentd/etc fluent/fluentd:edge-debian -c /fluentd/etc/fluentd.conf -v

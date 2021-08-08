@@ -39,6 +39,10 @@ while true; do
         --rm \
         $curlimage \
         -s "https://$rancher_server_ip/v3-public/localProviders/local?action=login" -H 'content-type: application/json' --data-binary '{"username":"admin","password":"${admin_password}"}' --insecure)
+    if [ "x$LOGINRESPONSE" = "x" ]; then
+        continue
+    fi
+
     LOGINTOKEN=$(echo $LOGINRESPONSE | docker run --rm -i $jqimage -r .token)
 
     if [ "$LOGINTOKEN" != "null" ]; then
