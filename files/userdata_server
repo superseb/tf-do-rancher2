@@ -1,4 +1,5 @@
-#!/bin/bash -x
+#!/bin/bash
+set -x
 export curlimage=appropriate/curl
 export jqimage=stedolan/jq
 
@@ -15,12 +16,22 @@ for image in $curlimage $jqimage "rancher/rancher:${rancher_version}"; do
   done
 done
 
-docker run -d -e AUDIT_LEVEL=${audit_level} --privileged --restart=unless-stopped -p 80:80 -p 443:443 -v /root/rancher:/var/lib/rancher rancher/rancher:${rancher_version} ${rancher_args}
+docker run -d -e AUDIT_LEVEL=${audit_level} --privileged --restart=unless-stopped -p 80:80 -p 443:443 -v /root/rancher:/var/lib/rancher --name rancher-server rancher/rancher:${rancher_version} ${rancher_args}
 
 while true; do
   docker run --rm --net=host $curlimage -sLk https://127.0.0.1/ping && break
   sleep 5
 done
+
+export rancher_version="${rancher_version}"
+export major_rancher_version=$(echo $rancher_version | cut -d. -f1)
+export minor_rancher_version=$(echo $rancher_version | cut -d. -f2)
+
+if [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.6" ]; then
+    export ADMIN_PASSWORD=$(docker logs rancher-server 2>&1 | grep "Bootstrap Password:" | awk '{ print $NF }')
+else
+    export ADMIN_PASSWORD="admin"
+fi
 
 # Login
 while true; do
@@ -29,7 +40,10 @@ while true; do
         --rm \
         --net=host \
         $curlimage \
-        -s "https://127.0.0.1/v3-public/localProviders/local?action=login" -H 'content-type: application/json' --data-binary '{"username":"admin","password":"admin"}' --insecure)
+        -s "https://127.0.0.1/v3-public/localProviders/local?action=login" -H 'content-type: application/json' --data-binary '{"username":"admin","password":"'"$${ADMIN_PASSWORD}"'"}' --insecure)
+    if [ "x$LOGINRESPONSE" = "x" ]; then
+        continue
+    fi
     LOGINTOKEN=$(echo $LOGINRESPONSE | docker run --rm -i $jqimage -r .token)
 
     if [ "$LOGINTOKEN" != "null" ]; then
@@ -41,13 +55,25 @@ done
 
 
 # Change password
-docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/users?action=changepassword' -H 'content-type: application/json' -H "Authorization: Bearer $LOGINTOKEN" --data-binary '{"currentPassword":"admin","newPassword":"${admin_password}"}' --insecure
+docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/users?action=changepassword' -H 'content-type: application/json' -H "Authorization: Bearer $LOGINTOKEN" --data-binary '{"currentPassword":"'"$${ADMIN_PASSWORD}"'","newPassword":"${admin_password}"}' --insecure
 
 # Create API key
-APIRESPONSE=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/token' -H 'content-type: application/json' -H "Authorization: Bearer $LOGINTOKEN" --data-binary '{"type":"token","description":"automation"}' --insecure)
+while true; do
 
-# Extract and store token
-APITOKEN=`echo $APIRESPONSE | docker run --rm -i $jqimage -r .token`
+    APIRESPONSE=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/token' -H 'content-type: application/json' -H "Authorization: Bearer $LOGINTOKEN" --data-binary '{"type":"token","description":"automation"}' --insecure)
+    if [ "x$APIRESPONSE" = "x" ]; then
+        continue
+    fi
+
+    # Extract and store token
+    APITOKEN=`echo $APIRESPONSE | docker run --rm -i $jqimage -r .token`
+
+    if [ "x$APITOKEN" != "x" ]; then
+        break
+    else
+        sleep 5
+    fi
+done
 
 # Configure server-url
 RANCHER_SERVER="https://$(docker run --rm --net=host $curlimage -s http://169.254.169.254/metadata/v1/interfaces/public/0/ipv4/address)"

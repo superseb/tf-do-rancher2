@@ -12,7 +12,7 @@ variable "prefix" {
 }
 
 variable "rancher_version" {
-  default = "v2.5.2"
+  default = "v2.5.9"
 }
 
 variable "audit_level" {
@@ -84,11 +84,11 @@ variable "tools_size" {
 }
 
 variable "docker_version_server" {
-  default = "19.03"
+  default = "20.10"
 }
 
 variable "docker_version_agent" {
-  default = "19.03"
+  default = "20.10"
 }
 
 variable "docker_root" {
