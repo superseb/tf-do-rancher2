@@ -8,7 +8,7 @@ admin_password = "admin"
 prefix = "myname"
 
 # rancher/rancher image tag to use
-rancher_version = "v2.5.2"
+rancher_version = "v2.5.9"
 
 # Rancher server audit log level (0-3)
 audit_level = 0
@@ -39,10 +39,10 @@ count_agent_worker_nodes = "0"
 count_tools_nodes = "0"
 
 # Docker version of host running `rancher/rancher`
-docker_version_server = "19.03"
+docker_version_server = "20.10"
 
 # Docker version of host being added to a cluster (running `rancher/rancher-agent`)
-docker_version_agent = "19.03"
+docker_version_agent = "20.10"
 
 # Docker root on agent nodes
 docker_root = ""

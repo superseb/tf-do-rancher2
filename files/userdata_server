@@ -33,6 +33,11 @@ else
     export ADMIN_PASSWORD="admin"
 fi
 
+# wait for rancher-webook to be ready
+while ! docker exec rancher-server kubectl rollout status -w -n cattle-system deploy/rancher-webhook; do
+    sleep 5
+done
+
 # Login
 while true; do
 
@@ -77,7 +82,19 @@ done
 
 # Configure server-url
 RANCHER_SERVER="https://$(docker run --rm --net=host $curlimage -s http://169.254.169.254/metadata/v1/interfaces/public/0/ipv4/address)"
-docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/settings/server-url' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" -X PUT --data-binary '{"name":"server-url","value":"'$RANCHER_SERVER'"}' --insecure
+
+while true; do
+    docker run --rm --net=host $curlimage -s "$RANCHER_SERVER/v3/settings/server-url" -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" -X PUT --data-binary '{"name":"server-url","value":"'$RANCHER_SERVER'"}' --insecure
+
+    # reading it back
+    CURRENTSERVERURL=$(docker run --rm --net=host $curlimage -s "$RANCHER_SERVER/v3/settings/server-url" -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --insecure | docker run --rm -i $jqimage -r .value)
+
+    if [ "x$CURRENTSERVERURL" != "x" ]; then
+        break
+    else
+        sleep 5
+    fi
+done
 
 # Check for available k8s versions if not specifically set
 if [ -z "${k8s_version}" ]; then
