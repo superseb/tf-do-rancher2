@@ -2,13 +2,13 @@
 do_token = "your_token"
 
 # Admin password to access Rancher
-admin_password = "admin"
+admin_password = "adminadminadmin"
 
 # Resources will be prefixed with this to avoid clashing names
 prefix = "myname"
 
 # rancher/rancher image tag to use
-rancher_version = "v2.5.9"
+rancher_version = "v2.6.2"
 
 # Rancher server audit log level (0-3)
 audit_level = 0
@@ -37,6 +37,18 @@ count_agent_worker_nodes = "0"
 
 # Count of tools nodes
 count_tools_nodes = "0"
+
+# Count of RKE2/Government agent nodes with role all
+count_rke2_agent_all_nodes = "0"
+
+# Count of RKE2/Government agent nodes with role etcd
+count_rke2_agent_etcd_nodes = "0"
+
+# Count of RKE2/Government agent nodes with role controlplane
+count_rke2_agent_controlplane_nodes = "0"
+
+# Count of RKE2/Government agent nodes with role worker
+count_rke2_agent_worker_nodes = "0"
 
 # Docker version of host running `rancher/rancher`
 docker_version_server = "20.10"
