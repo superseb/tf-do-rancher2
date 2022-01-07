@@ -7,14 +7,19 @@
 This Terraform setup will:
 
 - Start a droplet running `rancher/rancher` version specified in `rancher_version`
-- Create a custom cluster called `cluster_name`
+- Create a custom RKE1 cluster called `cluster_name`
 - Start `count_agent_all_nodes` amount of droplets and add them to the custom cluster with all roles
+- Create a custom RKE2 cluster called `cluster_rke2_name`
+- Start `count_rke2_agent_all_nodes` amount of droplets and add them to the custom cluster with all roles
 - Create an ssh_config file in the terraform module directory for connecting to the droplets
 
 ### Optional adding nodes per role
 - Start `count_agent_etcd_nodes` amount of droplets and add them to the custom cluster with etcd role
 - Start `count_agent_controlplane_nodes` amount of droplets and add them to the custom cluster with controlplane role
 - Start `count_agent_worker_nodes` amount of droplets and add them to the custom cluster with worker role
+- Start `count_rke2_agent_etcd_nodes` amount of droplets and add them to the custom cluster with etcd role
+- Start `count_rke2_agent_controlplane_nodes` amount of droplets and add them to the custom cluster with controlplane role
+- Start `count_rke2_agent_worker_nodes` amount of droplets and add them to the custom cluster with worker role
 
 ## Other options
 
