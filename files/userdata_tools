@@ -7,14 +7,14 @@ elif [ `command -v wget` ]; then
   IP="$(wget -qO- http://169.254.169.254/metadata/v1/interfaces/private/0/ipv4/address)"
 fi
 
-docker run --name squid -d --restart=always --publish $IP:3128:3128 --volume /srv/docker/squid/cache:/var/spool/squid3 sameersbn/squid:3.3.8-23   
+docker run --name squid -d --restart=always --publish $IP:3128:3128 --volume /srv/docker/squid/cache:/var/spool/squid3 sameersbn/squid:3.5.27-2
 
 # Elasticsearch
 sysctl -w vm.max_map_count=262144
-docker run --name elasticsearch -d -p $IP:9200:9200 -p $IP:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+docker run --name elasticsearch -d -p $IP:9200:9200 -p $IP:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.0
 
 # Kibana
-docker run -d --name kibana -p 5601:5601 --link=elasticsearch -e "SERVER_NAME=localhost" -e "ELASTIC_SEARCH_URL=http://elasticsearch:9200/" docker.elastic.co/kibana/kibana:7.14.0
+docker run -d --name kibana -p 5601:5601 --link=elasticsearch -e "SERVER_NAME=localhost" -e "ELASTIC_SEARCH_URL=http://elasticsearch:9200/" docker.elastic.co/kibana/kibana:7.17.0
 
 # SMTP
 
@@ -32,7 +32,7 @@ docker run -d --name echo -p $IP:8080:8080 -e LOG_HTTP_BODY=1 jmalloc/echo-serve
 # Syslog-ng to stdout
 # docker logs syslog
 cat <<EOF > /root/syslog-ng.conf
-@version: 3.19
+@version: 3.35
 
 source s_net { udp(); };
 destination d_stdout { file("/dev/stdout"); };
