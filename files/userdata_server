@@ -9,6 +9,15 @@ elif [ `command -v wget` ]; then
   wget -qO- https://releases.rancher.com/install-docker/${docker_version_server}.sh | sh
 fi
 
+### Customize Kernel parameters
+echo "Force kernel module nf_conntrack at boot"
+grep -q "nf_conntrack" /etc/modules || \
+  echo "nf_conntrack" | tee -a /etc/modules
+grep -q "net.netfilter.nf_conntrack_max" /etc/sysctl.conf || \
+  echo "net.netfilter.nf_conntrack_max = ${kernel_nf_conntrack_max}" | tee -a /etc/sysctl.conf
+sysctl -p /etc/sysctl.conf
+###
+
 for image in $curlimage $jqimage "rancher/rancher:${rancher_version}"; do
   until docker inspect $image > /dev/null 2>&1; do
     docker pull $image
