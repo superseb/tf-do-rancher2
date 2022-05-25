@@ -147,6 +147,10 @@ variable "user_tools" {
   default = "root"
 }
 
+variable "kernel_nf_conntrack_max" {
+  default = "131072"
+}
+
 variable "ssh_keys" {
   default = []
 }
@@ -279,16 +283,17 @@ data "template_file" "userdata_server" {
   template = file("files/userdata_server")
 
   vars = {
-    admin_password        = var.admin_password
-    cluster_name          = var.cluster_name
-    cluster_rke2_name     = var.cluster_rke2_name
-    docker_version_server = var.docker_version_server
-    docker_root           = var.docker_root
-    rancher_version       = var.rancher_version
-    rancher_args          = var.rancher_args
-    k8s_version           = var.k8s_version
-    k8s_rke2_version      = var.k8s_rke2_version
-    audit_level           = var.audit_level
+    admin_password          = var.admin_password
+    cluster_name            = var.cluster_name
+    cluster_rke2_name       = var.cluster_rke2_name
+    docker_version_server   = var.docker_version_server
+    docker_root             = var.docker_root
+    rancher_version         = var.rancher_version
+    rancher_args            = var.rancher_args
+    k8s_version             = var.k8s_version
+    k8s_rke2_version        = var.k8s_rke2_version
+    audit_level             = var.audit_level
+    kernel_nf_conntrack_max = var.kernel_nf_conntrack_max
   }
 }
 

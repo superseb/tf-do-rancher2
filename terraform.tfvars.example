@@ -92,6 +92,9 @@ user_agent = "root"
 ## User for tools image
 user_tools = "root"
 
+## Kernel parameters for server
+kernel_nf_conntrack_max = "131072"
+
 # DigitalOcean ssh-keyid
 # ssh_keys = [ "your_key_id" ]
 # Retrieve using (max 200 keys in account): `curl -s -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" "https://api.digitalocean.com/v2/account/keys?per_page=200"  | jq -r '.ssh_keys[] | select(.name=="YOUR_KEY_NAME") | .id'`
