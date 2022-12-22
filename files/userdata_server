@@ -35,7 +35,7 @@ export rancher_version="${rancher_version}"
 export major_rancher_version=$(echo $rancher_version | cut -d. -f1)
 export minor_rancher_version=$(echo $rancher_version | cut -d. -f2)
 
-if [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.6" ]; then
+if [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.6" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.7" ] ; then
     export ADMIN_PASSWORD=$(docker logs rancher-server 2>&1 | grep "Bootstrap Password:" | awk '{ print $NF }')
 else
     export ADMIN_PASSWORD="admin"
