@@ -158,11 +158,16 @@ variable "ssh_keys" {
 data "digitalocean_account" "do-account" {
 }
 
+resource "digitalocean_vpc" "droplets-network" {
+  name        = "${var.prefix}-droplets-vpc"
+  region      = var.region_server
+}
+
 resource "digitalocean_droplet" "rancherserver" {
   count              = "1"
   image              = var.image_server
   name               = "${var.prefix}-rancherserver"
-  private_networking = true
+  vpc_uuid           = digitalocean_vpc.droplets-network.id
   region             = var.region_server
   size               = var.size
   user_data          = data.template_file.userdata_server.rendered
@@ -174,7 +179,7 @@ resource "digitalocean_droplet" "rancheragent-all" {
   count              = var.count_agent_all_nodes
   image              = var.image_agent
   name               = "${var.prefix}-rancheragent-all-${count.index}"
-  private_networking = true
+  vpc_uuid           = digitalocean_vpc.droplets-network.id
   region             = var.region_agent
   size               = var.all_size
   user_data          = data.template_file.userdata_agent.rendered
@@ -186,7 +191,7 @@ resource "digitalocean_droplet" "rancheragent-etcd" {
   count              = var.count_agent_etcd_nodes
   image              = var.image_agent
   name               = "${var.prefix}-rancheragent-etcd-${count.index}"
-  private_networking = true
+  vpc_uuid           = digitalocean_vpc.droplets-network.id
   region             = var.region_agent
   size               = var.etcd_size
   user_data          = data.template_file.userdata_agent.rendered
@@ -198,7 +203,7 @@ resource "digitalocean_droplet" "rancheragent-controlplane" {
   count              = var.count_agent_controlplane_nodes
   image              = var.image_agent
   name               = "${var.prefix}-rancheragent-controlplane-${count.index}"
-  private_networking = true
+  vpc_uuid           = digitalocean_vpc.droplets-network.id
   region             = var.region_agent
   size               = var.controlplane_size
   user_data          = data.template_file.userdata_agent.rendered
@@ -210,7 +215,7 @@ resource "digitalocean_droplet" "rancheragent-worker" {
   count              = var.count_agent_worker_nodes
   image              = var.image_agent
   name               = "${var.prefix}-rancheragent-worker-${count.index}"
-  private_networking = true
+  vpc_uuid           = digitalocean_vpc.droplets-network.id
   region             = var.region_agent
   size               = var.worker_size
   user_data          = data.template_file.userdata_agent.rendered
@@ -222,7 +227,7 @@ resource "digitalocean_droplet" "rancher-tools" {
   count              = var.count_tools_nodes
   image              = var.image_tools
   name               = "${var.prefix}-rancher-tools-${count.index}"
-  private_networking = true
+  vpc_uuid           = digitalocean_vpc.droplets-network.id
   region             = var.region_agent
   size               = var.tools_size
   user_data          = data.template_file.userdata_tools.rendered
@@ -234,7 +239,7 @@ resource "digitalocean_droplet" "rancheragent-rke2-all" {
   count              = var.count_rke2_agent_all_nodes
   image              = var.image_agent
   name               = "${var.prefix}-rancheragent-rke2-all-${count.index}"
-  private_networking = true
+  vpc_uuid           = digitalocean_vpc.droplets-network.id
   region             = var.region_agent
   size               = var.all_size
   user_data          = data.template_file.userdata_rke2_agent.rendered
@@ -246,7 +251,7 @@ resource "digitalocean_droplet" "rancheragent-rke2-etcd" {
   count              = var.count_rke2_agent_etcd_nodes
   image              = var.image_agent
   name               = "${var.prefix}-rancheragent-rke2-etcd-${count.index}"
-  private_networking = true
+  vpc_uuid           = digitalocean_vpc.droplets-network.id
   region             = var.region_agent
   size               = var.etcd_size
   user_data          = data.template_file.userdata_rke2_agent.rendered
@@ -258,7 +263,7 @@ resource "digitalocean_droplet" "rancheragent-rke2-controlplane" {
   count              = var.count_rke2_agent_controlplane_nodes
   image              = var.image_agent
   name               = "${var.prefix}-rancheragent-rke2-controlplane-${count.index}"
-  private_networking = true
+  vpc_uuid           = digitalocean_vpc.droplets-network.id
   region             = var.region_agent
   size               = var.controlplane_size
   user_data          = data.template_file.userdata_rke2_agent.rendered
@@ -270,7 +275,7 @@ resource "digitalocean_droplet" "rancheragent-rke2-worker" {
   count              = var.count_rke2_agent_worker_nodes
   image              = var.image_agent
   name               = "${var.prefix}-rancheragent-rke2-worker-${count.index}"
-  private_networking = true
+  vpc_uuid           = digitalocean_vpc.droplets-network.id
   region             = var.region_agent
   size               = var.worker_size
   user_data          = data.template_file.userdata_rke2_agent.rendered
