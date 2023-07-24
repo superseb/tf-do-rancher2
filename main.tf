@@ -12,7 +12,7 @@ variable "prefix" {
 }
 
 variable "rancher_version" {
-  default = "v2.7.0"
+  default = "v2.7.5"
 }
 
 variable "audit_level" {
@@ -80,23 +80,23 @@ variable "region_agent" {
 }
 
 variable "size" {
-  default = "s-2vcpu-4gb"
+  default = "s-4vcpu-8gb"
 }
 
 variable "all_size" {
-  default = "s-2vcpu-4gb"
+  default = "s-4vcpu-8gb"
 }
 
 variable "etcd_size" {
-  default = "s-2vcpu-4gb"
+  default = "s-4vcpu-8gb"
 }
 
 variable "controlplane_size" {
-  default = "s-2vcpu-4gb"
+  default = "s-4vcpu-8gb"
 }
 
 variable "worker_size" {
-  default = "s-2vcpu-4gb"
+  default = "s-4vcpu-8gb"
 }
 
 variable "tools_size" {
@@ -104,11 +104,11 @@ variable "tools_size" {
 }
 
 variable "docker_version_server" {
-  default = "20.10"
+  default = "24.0"
 }
 
 variable "docker_version_agent" {
-  default = "20.10"
+  default = "24.0"
 }
 
 variable "docker_root" {
@@ -124,15 +124,15 @@ variable "k8s_rke2_version" {
 }
 
 variable "image_server" {
-  default = "ubuntu-20-04-x64"
+  default = "ubuntu-22-04-x64"
 }
 
 variable "image_agent" {
-  default = "ubuntu-20-04-x64"
+  default = "ubuntu-22-04-x64"
 }
 
 variable "image_tools" {
-  default = "ubuntu-20-04-x64"
+  default = "ubuntu-22-04-x64"
 }
 
 variable "user_server" {

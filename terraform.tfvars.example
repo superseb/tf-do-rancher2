@@ -8,7 +8,7 @@ admin_password = "adminadminadmin"
 prefix = "myname"
 
 # rancher/rancher image tag to use
-rancher_version = "v2.7.0"
+rancher_version = "v2.7.5"
 
 # Rancher server audit log level (0-3)
 audit_level = 0
@@ -51,10 +51,10 @@ count_rke2_agent_controlplane_nodes = "0"
 count_rke2_agent_worker_nodes = "0"
 
 # Docker version of host running `rancher/rancher`
-docker_version_server = "20.10"
+docker_version_server = "24.0"
 
 # Docker version of host being added to a cluster (running `rancher/rancher-agent`)
-docker_version_agent = "20.10"
+docker_version_agent = "24.0"
 
 # Docker root on agent nodes
 docker_root = ""
@@ -64,24 +64,24 @@ docker_root = ""
 k8s_version = ""
 
 # Droplet sizes
-all_size = "s-2vcpu-4gb"
+all_size = "s-4vcpu-8gb"
 
-etcd_size = "s-2vcpu-4gb"
+etcd_size = "s-4vcpu-8gb"
 
-controlplane_size = "s-2vcpu-4gb"
+controlplane_size = "s-4vcpu-8gb"
 
-worker_size = "s-2vcpu-4gb"
+worker_size = "s-4vcpu-8gb"
 
 tools_size = "s-4vcpu-8gb"
 
 # Image of host running `rancher/rancher`
-image_server = "ubuntu-20-04-x64"
+image_server = "ubuntu-22-04-x64"
 
 # Image of host being added to a cluster (running `rancher/rancher-agent`)
-image_agent = "ubuntu-20-04-x64"
+image_agent = "ubuntu-22-04-x64"
 
 # Image for host running tools
-image_tools = "ubuntu-20-04-x64"
+image_tools = "ubuntu-22-04-x64"
 
 ## User for server image
 user_server = "root"
