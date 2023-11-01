@@ -8,7 +8,7 @@ admin_password = "adminadminadmin"
 prefix = "myname"
 
 # rancher/rancher image tag to use
-rancher_version = "v2.7.5"
+rancher_version = "v2.7.9"
 
 # Rancher server audit log level (0-3)
 audit_level = 0

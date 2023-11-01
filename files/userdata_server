@@ -35,10 +35,14 @@ export rancher_version="${rancher_version}"
 export major_rancher_version=$(echo $rancher_version | cut -d. -f1)
 export minor_rancher_version=$(echo $rancher_version | cut -d. -f2)
 
-if [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.6" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.7" ] ; then
-    export ADMIN_PASSWORD=$(docker logs rancher-server 2>&1 | grep "Bootstrap Password:" | awk '{ print $NF }')
-else
+if [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.0" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.1" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.2" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.3" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.4" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.5" ]; then
     export ADMIN_PASSWORD="admin"
+else
+    export ADMIN_PASSWORD=$(docker logs rancher-server 2>&1 | grep "Bootstrap Password:" | awk '{ print $NF }')
+    # wait for capi-controller-manager (capi-webhook-service) to be ready
+    while ! docker exec rancher-server kubectl rollout status -w -n cattle-provisioning-capi-system deploy/capi-controller-manager; do
+        sleep 5
+    done
 fi
 
 # wait for rancher-webook to be ready
@@ -129,7 +133,7 @@ CLUSTERID=`echo $CLUSTERRESPONSE | docker run --rm -i $jqimage -r .id`
 # Generate registrationtoken
 docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/clusterregistrationtoken' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --data-binary '{"type":"clusterRegistrationToken","clusterId":"'$CLUSTERID'"}' --insecure
 
-# Create RKE2/Government cluster
+# Create RKE2 cluster (only available in v2.6.x and higher)
 RKE2_K8S_VERSION=${k8s_rke2_version}
 if [[ "x$${RKE2_K8S_VERSION}" == "x" ]]; then
   # Look up latest available
@@ -143,7 +147,7 @@ CLUSTERRESPONSE=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v1
 # Get  clusterid to use for generating the docker run command
 CLUSTERID=`docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/clusters?name=${cluster_rke2_name}' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --insecure | docker run --rm -i $jqimage -r .data[].id`
 
-# Generate RKE2/Government registrationtoken
+# Generate RKE2 registrationtoken
 docker run --rm --net=host $curlimage -s 'https://127.0.0.1/v3/clusterregistrationtoken' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --data-binary '{"type":"clusterRegistrationToken","clusterId":"'$CLUSTERID'"}' --insecure
 
 # CLI (optional)
