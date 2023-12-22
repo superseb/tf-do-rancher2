@@ -10,7 +10,7 @@ if [ `command -v curl` ]; then
     chmod +x /usr/bin/semver2.sh
 elif [ `command -v wget` ]; then
   wget -qO- https://releases.rancher.com/install-docker/${docker_version_server}.sh | sh
-  wget -O - -o /dev/null https://github.com/Ariel-Rodriguez/sh-semversion-2/archive/refs/tags/v$semver2_version.tar.gz | tar xvfz - -C /usr/bin --strip-components=1 sh-semversion-2-$semver2_version/semver2.sh && \
+  wget -qO- https://github.com/Ariel-Rodriguez/sh-semversion-2/archive/refs/tags/v$semver2_version.tar.gz | tar xvfz - -C /usr/bin --strip-components=1 sh-semversion-2-$semver2_version/semver2.sh && \
     chmod +x /usr/bin/semver2.sh
 fi
 
