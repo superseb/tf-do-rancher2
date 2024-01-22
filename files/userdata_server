@@ -2,11 +2,16 @@
 set -x
 export curlimage=appropriate/curl
 export jqimage=stedolan/jq
+export semver2_version=1.0.5
 
 if [ `command -v curl` ]; then
   curl -sL https://releases.rancher.com/install-docker/${docker_version_server}.sh | sh
+  curl -sLf https://github.com/Ariel-Rodriguez/sh-semversion-2/archive/refs/tags/v$semver2_version.tar.gz | tar xvfz - -C /usr/bin --strip-components=1 sh-semversion-2-$semver2_version/semver2.sh && \
+    chmod +x /usr/bin/semver2.sh
 elif [ `command -v wget` ]; then
   wget -qO- https://releases.rancher.com/install-docker/${docker_version_server}.sh | sh
+  wget -qO- https://github.com/Ariel-Rodriguez/sh-semversion-2/archive/refs/tags/v$semver2_version.tar.gz | tar xvfz - -C /usr/bin --strip-components=1 sh-semversion-2-$semver2_version/semver2.sh && \
+    chmod +x /usr/bin/semver2.sh
 fi
 
 ### Customize Kernel parameters
@@ -25,30 +30,38 @@ for image in $curlimage $jqimage "rancher/rancher:${rancher_version}"; do
   done
 done
 
-docker run -d -e AUDIT_LEVEL=${audit_level} --privileged --restart=unless-stopped -p 80:80 -p 443:443 -v /root/rancher:/var/lib/rancher --name rancher-server rancher/rancher:${rancher_version} ${rancher_args}
+docker run -d -e CATTLE_BOOTSTRAP_PASSWORD=administrator -e AUDIT_LEVEL=${audit_level} --privileged --restart=unless-stopped -p 80:80 -p 443:443 -v /root/rancher:/var/lib/rancher --name rancher-server rancher/rancher:${rancher_version} ${rancher_args}
 
 while true; do
   docker run --rm --net=host $curlimage -sLk https://127.0.0.1/ping && sleep 10 && break
 done
 
-export rancher_version="${rancher_version}"
-export major_rancher_version=$(echo $rancher_version | cut -d. -f1)
-export minor_rancher_version=$(echo $rancher_version | cut -d. -f2)
+RANCHER_2_6_0_COMPARISON=$(semver2.sh ${rancher_version} v2.6.0)
+RANCHER_2_7_6_COMPARISON=$(semver2.sh ${rancher_version} v2.7.6)
+RANCHER_2_5_0_COMPARISON=$(semver2.sh ${rancher_version} v2.5.0)
+LESS_THAN=-1
+GREATER_THAN=1
+EQUAL_TO=0
 
-if [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.0" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.1" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.2" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.3" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.4" ] || [ "$${major_rancher_version}.$${minor_rancher_version}" = "v2.5" ]; then
+if [ $RANCHER_2_6_0_COMPARISON = $LESS_THAN ]; then
     export ADMIN_PASSWORD="admin"
 else
-    export ADMIN_PASSWORD=$(docker logs rancher-server 2>&1 | grep "Bootstrap Password:" | awk '{ print $NF }')
+    export ADMIN_PASSWORD="administrator"
+fi
+
+if [ $RANCHER_2_7_6_COMPARISON = $GREATER_THAN ]; then
     # wait for capi-controller-manager (capi-webhook-service) to be ready
     while ! docker exec rancher-server kubectl rollout status -w -n cattle-provisioning-capi-system deploy/capi-controller-manager; do
         sleep 5
     done
 fi
 
-# wait for rancher-webook to be ready
-while ! docker exec rancher-server kubectl rollout status -w -n cattle-system deploy/rancher-webhook; do
-    sleep 5
-done
+if [ $RANCHER_2_5_0_COMPARISON = $GREATER_THAN ] || [ $RANCHER_2_5_0_COMPARISON = $EQUAL_TO ]; then
+    # wait for rancher-webook to be ready
+    while ! docker exec rancher-server kubectl rollout status -w -n cattle-system deploy/rancher-webhook; do
+        sleep 5
+    done
+fi
 
 # Login
 while true; do
